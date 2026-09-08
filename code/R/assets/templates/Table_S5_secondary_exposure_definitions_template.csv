@@ -1,0 +1,5 @@
+Exposure metric,Categories or unit,Reference,Definition
+Any high-risk exposure,No; Yes,No,Indicator of any ICU day with daily TWA-PaCO2 <35 or >50 mmHg up to the landmark day
+Number of high-risk days,0; 1; 2-3; >=4 days,0 days,Cumulative number of ICU days with daily TWA-PaCO2 <35 or >50 mmHg up to the landmark day
+Proportion of high-risk days,0%; >0-25%; >25-50%; >50%,0%,Cumulative high-risk days divided by cumulative observable ICU days up to the landmark day
+Cumulative deviation dose,Per 10 mmHg-days,0 mmHg-days,"Cumulative sum of max(35 - TWA-PaCO2, 0) + max(TWA-PaCO2 - 50, 0) up to the landmark day, modeled per 10 mmHg-days"

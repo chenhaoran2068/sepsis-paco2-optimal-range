@@ -1,0 +1,12 @@
+Exposure metric,Category or contrast,Reference,N rows,N patients,Events,Adjusted HR,95% CI,P value,P for trend
+Any high-risk exposure,No,Reference,,,,,,,
+Any high-risk exposure,Yes,No,,,,,,,
+Number of high-risk days,0,Reference,,,,,,,
+Number of high-risk days,1,0,,,,,,,
+Number of high-risk days,2-3,0,,,,,,,
+Number of high-risk days,>=4,0,,,,,,,
+Proportion of high-risk days,0%,Reference,,,,,,,
+Proportion of high-risk days,>0-25%,0%,,,,,,,
+Proportion of high-risk days,>25-50%,0%,,,,,,,
+Proportion of high-risk days,>50%,0%,,,,,,,
+Cumulative deviation dose,per 10 mmHg-days,0 mmHg-days,,,,,,,

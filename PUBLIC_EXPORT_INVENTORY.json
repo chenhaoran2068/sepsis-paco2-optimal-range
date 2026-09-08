@@ -1,0 +1,183 @@
+{
+  "record_type": "paper_repository_candidate_inventory",
+  "schema_version": "0.1.0",
+  "candidate_id": "sepsis-paco2-optimal-range_candidate_20260908_07",
+  "built_at": "2026-09-08T08:56:47.140497+00:00",
+  "files": [
+    {
+      "path": ".Rprofile",
+      "size": 27,
+      "sha256": "08654ee73bbfa9d016a10709f3589fea6a343a19b6539206ed2eabbac69001f6"
+    },
+    {
+      "path": ".gitignore",
+      "size": 243,
+      "sha256": "86ac12b5f57dd446eb12f97cb56ad50ff0e3cdb52d45a8e72ae9a73a260ea091"
+    },
+    {
+      "path": "CITATION.cff",
+      "size": 474,
+      "sha256": "b9a4908c8cb170fdb90cfe30efc47df962a3102e587e2b65ed89c10a584f0859"
+    },
+    {
+      "path": "DATA_ACCESS.md",
+      "size": 1361,
+      "sha256": "0ac81d84240e1a199605aa328c0648c199f9b1d0874a82a6f7d6ca20f78b73db"
+    },
+    {
+      "path": "LICENSE",
+      "size": 1095,
+      "sha256": "e24e304331abd542295e9c43c003d800272f060b22c9aaa4e9015fc2124a36eb"
+    },
+    {
+      "path": "LICENSE-DATA.md",
+      "size": 811,
+      "sha256": "1ffbccdaca18ebdef8b4341dfe480725a96b49b70767e19817cf5e93e6a659bb"
+    },
+    {
+      "path": "LICENSE-STATUS.md",
+      "size": 1193,
+      "sha256": "85d18f9bf07db8c9fc17e886572ef4b2e7d33c5009016a2b92ec8202f7baec66"
+    },
+    {
+      "path": "README.md",
+      "size": 4588,
+      "sha256": "a21c7986648135b997c2cc9bb36abead8dfbf1fb3bdcb3f3e6318cc56e1597a1"
+    },
+    {
+      "path": "RELEASE_MANIFEST.json",
+      "size": 2998,
+      "sha256": "03fca3d29430be3cf3cfdc0c919256511fc4fd6a46e01201e6fb2d12e3117803"
+    },
+    {
+      "path": "VALIDATION.md",
+      "size": 2629,
+      "sha256": "08cc740dabba6d334326bd519ad38484ed0680a24df906151896ef7a4a4ff152"
+    },
+    {
+      "path": "code/R/00_functions/compute_twa_paco2.R",
+      "size": 8964,
+      "sha256": "622f968996f89830c799727b073e6265c266167839a5029a08c6a151490890ff"
+    },
+    {
+      "path": "code/R/00_functions/release_config.R",
+      "size": 3541,
+      "sha256": "588ecc5b353cc9b2911fffa888dd009e2e7730819c810f5bc33f3653168ba7bf"
+    },
+    {
+      "path": "code/R/analysis/01_prepare_pamm_ped_data.R",
+      "size": 15042,
+      "sha256": "f63a391060070511fc9f7f4cff75217cb2dd39f7e6a5977de4d0b255858f8600"
+    },
+    {
+      "path": "code/R/analysis/10_result1_population_baseline.R",
+      "size": 20177,
+      "sha256": "df5b3b520cb1bc604f6f9f1c18a236322434b5b96375670a72d72e15b2147113"
+    },
+    {
+      "path": "code/R/analysis/11_result2_primary_pamm.R",
+      "size": 39426,
+      "sha256": "f4971852512bef4e6e395f4773fe07ed39ae927982fa78029f366e217c7aae99"
+    },
+    {
+      "path": "code/R/analysis/13_result3_landmark_burden.R",
+      "size": 61634,
+      "sha256": "342cf0e241c5e9079e33ad9abef30e453c5dfb635c7523ef30dc7ab487f26fe1"
+    },
+    {
+      "path": "code/R/analysis/14_result4_subgroups_ph_sensitivity.R",
+      "size": 39340,
+      "sha256": "98b70e3450a579067decd71da76d50d26214602dede72a25ae3beb0d1e32b4dd"
+    },
+    {
+      "path": "code/R/analysis/20_build_latex_tables.R",
+      "size": 6952,
+      "sha256": "3fe38869f34a26e0f7bda37ce9f009808989f17d8db29d880825189150c8675b"
+    },
+    {
+      "path": "code/R/assets/templates/Table_1_baseline_characteristics_template.csv",
+      "size": 1301,
+      "sha256": "9b78d3f070911408a4195d4a16e90ffd92d67b493d9ddfb9fd532fb0f70bce12"
+    },
+    {
+      "path": "code/R/assets/templates/Table_3_high_risk_paco2_burden_template.csv",
+      "size": 595,
+      "sha256": "2b6d91b4fdbe80b0c26c83346b71606c711cc47cb0c3c542c1d279696879452f"
+    },
+    {
+      "path": "code/R/assets/templates/Table_S1_missingness_template.csv",
+      "size": 627,
+      "sha256": "06bba94d3e8612e927c584ce42e0339aa7310b90cb5199063de5b5e9dd655758"
+    },
+    {
+      "path": "code/R/assets/templates/Table_S5_secondary_exposure_definitions_template.csv",
+      "size": 638,
+      "sha256": "f3474ff62ee8b279dff3485ef4143d9bfed042ac9597b63d801f6ca73c8160bc"
+    },
+    {
+      "path": "code/R/generate_demo_data.R",
+      "size": 6445,
+      "sha256": "b04f3801fb08d39321ccbc544612a11e472a72a825563fafcb31b399d57e21c0"
+    },
+    {
+      "path": "code/install_dependencies.R",
+      "size": 851,
+      "sha256": "e37ec667b9f864434f6d26b1f535388b2aca1f6ac056f7591b7500dffadf37b1"
+    },
+    {
+      "path": "code/run_demo.R",
+      "size": 4011,
+      "sha256": "de6c6039cab9ceb2fa73f9273579886065a1d7d72f93280148368391866eb518"
+    },
+    {
+      "path": "config/demo.yml",
+      "size": 235,
+      "sha256": "e95c93fc96c4051962e99b3c4294aafe8b253bfbe902e7aff7654189c77e6e1d"
+    },
+    {
+      "path": "demo/DATA_CONTRACT.md",
+      "size": 1922,
+      "sha256": "8b58d8f6b7b798d36d79ba0b7d97fd840187387f68c288e861e9856993f22b8f"
+    },
+    {
+      "path": "expected/output-contract.csv",
+      "size": 1759,
+      "sha256": "685197a574494f61a40b4ceb8c051c451525dd7a4f41aa1f8b7bc26fd5dd718f"
+    },
+    {
+      "path": "protocol/analysis-specification.md",
+      "size": 1208,
+      "sha256": "5f66d32f8494fa44f57ac751ca767254e6e0cd0243c18ba9a536fb2d5cb9d258"
+    },
+    {
+      "path": "protocol/paper-output-map.md",
+      "size": 2662,
+      "sha256": "69c32a66e569f80bc7f2aafa8297773c5d46b398d7d3080c94a318c782f7ebb3"
+    },
+    {
+      "path": "protocol/study-summary.md",
+      "size": 1116,
+      "sha256": "3665647481b6c9039ab94ac72398ac48965e8098079a2c7c979d083894b033f0"
+    },
+    {
+      "path": "renv.lock",
+      "size": 109216,
+      "sha256": "44b334b8f16af32823e3842f3f171484f20207d935fe2177b8fdb310c41a0039"
+    },
+    {
+      "path": "renv/activate.R",
+      "size": 38079,
+      "sha256": "7a6e30282dd33001ec0e2327b7b5bd5e6c40bbe7db1c9f077e8aedd7528a2e95"
+    },
+    {
+      "path": "renv/settings.json",
+      "size": 431,
+      "sha256": "0a3a4d7bdfe0540a89570d73360e4b839ad14c156aab3483d4e86618c781ef0e"
+    },
+    {
+      "path": "tests/validate_demo_run.R",
+      "size": 5506,
+      "sha256": "84a7a4e07870d1c42dc99a19285826d7b0860c23b4ca346ffd867bbdd9aa3695"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "This is an unversioned public source repository. Cite a frozen tagged archive release when one becomes available."
+type: software
+title: "Sepsis PaCO2 Optimal Range"
+license: MIT
+repository-code: "https://github.com/chenhaoran2068/sepsis-paco2-optimal-range"
+authors:
+  - family-names: Pan
+    given-names: Cuigai
+  - family-names: Han
+    given-names: Guanjie
+  - family-names: Kondo
+    given-names: Yutaka
+  - family-names: Pan
+    given-names: Qinyuan
+  - family-names: Chen
+    given-names: Haoran
+  - family-names: Xie
+    given-names: Yongpeng

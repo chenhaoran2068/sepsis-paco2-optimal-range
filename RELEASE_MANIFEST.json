@@ -1,0 +1,64 @@
+{
+  "record_type": "paper_repository_release_manifest",
+  "schema_version": "0.1.0",
+  "study_id": "Research1_sepsis-paco2",
+  "research_output_id": "daily-twa-paco2-28d-mortality-multicohort-analysis",
+  "release_status": "released",
+  "release_profile": "code_with_synthetic_demo",
+  "repository": {
+    "owner": "chenhaoran2068",
+    "name": "sepsis-paco2-optimal-range",
+    "visibility": "public",
+    "url": "https://github.com/chenhaoran2068/sepsis-paco2-optimal-range"
+  },
+  "candidate": {
+    "candidate_id": "sepsis-paco2-optimal-range_candidate_20260908_07",
+    "source_scope_reference": "public_export_scope_candidate_20260908_07.json",
+    "destination_reference": "candidates/sepsis-paco2-optimal-range_candidate_20260908_07",
+    "inventory_reference": "candidates/sepsis-paco2-optimal-range_candidate_20260908_07/PUBLIC_EXPORT_INVENTORY.json",
+    "built_at": "2026-09-08"
+  },
+  "content": {
+    "readme_reference": "README.md",
+    "citation_reference": "CITATION.cff",
+    "data_access_reference": "DATA_ACCESS.md",
+    "paper_output_map_reference": "protocol/paper-output-map.md",
+    "shortest_run_command": "Rscript code/run_demo.R --run-id demo_run_001",
+    "expected_output_reference": "expected/output-contract.csv"
+  },
+  "rights": {
+    "code_license": "MIT License implemented in this candidate for analytical code and original repository documentation; user authorization recorded on 2026-09-08",
+    "data_license_or_restriction": "No study data distributed; CC0-1.0 implemented in this candidate for newly generated synthetic demo data only; user authorization recorded on 2026-09-08",
+    "text_and_figure_license_or_restriction": "Study text, figures, tables, and supplements are not distributed",
+    "third_party_review_status": "renv_activate_R_reviewed; notice included; non-distributed dependency terms remain controlling"
+  },
+  "validation": {
+    "scope_and_rights": "passed",
+    "clean_candidate": "passed",
+    "reproducibility": "passed",
+    "independent_review": "pending",
+    "release_and_citation": "unversioned_public_repository",
+    "tested_platforms": ["Windows with R 4.5.1 in a short checkout path"],
+    "validation_evidence_references": ["VALIDATION.md", "Study control: validation_evidence/demo_validation_20260908_04.md"]
+  },
+  "release_identity": {
+    "commit": null,
+    "tag": null,
+    "github_release_url": null,
+    "persistent_identifier": null
+  },
+  "human_decisions": {
+    "scope_approved_by": "User approval recorded on 2026-09-08",
+    "rights_approved_by": "User authorization recorded on 2026-09-08",
+    "citation_approved_by": "User approval recorded on 2026-09-08",
+    "release_approved_by": "User authorization recorded on 2026-09-08",
+    "approval_record_reference": "Study control: 07_analysis/public_release/validation_evidence/local_github_working_copy_promotion_20260908.md"
+  },
+  "maintenance": {
+    "owner": "chenhaoran2068",
+    "support_boundary": "Synthetic demonstration only; no support for restricted source-data access or execution.",
+    "correction_route": "Record a Study-owned correction decision, review a new clean candidate, and publish a new commit without rewriting public history.",
+    "retirement_condition": "Retire if rights, access restrictions, or study conclusions invalidate the package boundary."
+  },
+  "updated_at": "2026-09-08"
+}

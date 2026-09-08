@@ -1,0 +1,18 @@
+# Generated synthetic inputs and demonstration outputs
+demo/input/
+output/
+
+# R and renv local state
+renv/library/
+renv/staging/
+.Rhistory
+.RData
+.Rproj.user/
+.Renviron
+.env
+
+# Logs, caches, and editor state
+*.log
+__pycache__/
+*.pyc
+.DS_Store

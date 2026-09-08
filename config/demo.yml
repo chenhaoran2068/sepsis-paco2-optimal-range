@@ -1,0 +1,12 @@
+mode: demo
+run_id: demo_validation_v0_1_0
+seed: 20260907
+input_root: demo/input
+output_root: output/demo_runs
+expected_root: expected
+allowed_cohorts:
+  - MIMIC
+  - AmsterdamUMCdb
+  - Chinese cohort
+max_icu_day: 7
+max_followup_day: 28
