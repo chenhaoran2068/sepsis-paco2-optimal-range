@@ -39,6 +39,8 @@ dir.create(TABLE_MAIN_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(TABLE_SUPP_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(MANUSCRIPT_DIR, recursive = TRUE, showWarnings = FALSE)
 
+NOMINAL_LANDMARK_WINDOW_MINUTES <- 24 * 60
+
 message("Running Result 3: landmark categories and high-risk PaCO2 burden...")
 
 cohort_display <- c(
@@ -133,7 +135,7 @@ impute_dynamic_numeric <- function(data, variable, out_variable) {
     ) %>%
     arrange(.data$global_stay_id, .data$icu_day) %>%
     group_by(.data$global_stay_id) %>%
-    fill(all_of(within_variable), .direction = "downup") %>%
+    fill(all_of(within_variable), .direction = "down") %>%
     ungroup() %>%
     left_join(day_medians, by = c("analysis_cohort", "icu_day")) %>%
     left_join(cohort_medians, by = "analysis_cohort") %>%
@@ -264,19 +266,42 @@ prepare_landmark_data <- function() {
       baseline_bmi = "bmi"
     )
 
-  day_long <- read_parquet(file.path(POOLED_DIR, "all_day_long.parquet")) %>%
+  day_long_source <- read_parquet(file.path(POOLED_DIR, "all_day_long.parquet")) %>%
     as.data.frame() %>%
     filter(
       .data$included_final,
-      .data$landmark_eligible,
       .data$icu_day >= 1L,
       .data$icu_day <= 7L,
       !is.na(.data$twa_paco2)
+    )
+
+  landmark_risk_set_qc <- day_long_source %>%
+    mutate(
+      complete_nominal_window = near(.data$window_duration_min, NOMINAL_LANDMARK_WINDOW_MINUTES),
+      strict_landmark_eligible = .data$landmark_eligible & .data$complete_nominal_window
+    ) %>%
+    group_by(.data$analysis_cohort, .data$icu_day) %>%
+    summarise(
+      previously_eligible_rows = sum(.data$landmark_eligible, na.rm = TRUE),
+      strict_landmark_rows = sum(.data$strict_landmark_eligible, na.rm = TRUE),
+      excluded_incomplete_window_rows = sum(.data$landmark_eligible & !.data$complete_nominal_window, na.rm = TRUE),
+      .groups = "drop"
+    )
+  write_csv(
+    landmark_risk_set_qc,
+    file.path(TABLE_SUPP_DIR, "Result_3_fixed_landmark_risk_set_qc.csv"),
+    na = ""
+  )
+
+  day_long <- day_long_source %>%
+    filter(
+      .data$landmark_eligible,
+      near(.data$window_duration_min, NOMINAL_LANDMARK_WINDOW_MINUTES)
     ) %>%
     left_join(baseline, by = "global_stay_id") %>%
     mutate(
       landmark_time = pmax(.data$time_from_window_end_to_event_or_censor_days, 1e-06),
-      landmark_event = .data$death_28d & .data$time_to_event_28d_days > .data$icu_day,
+      landmark_event = .data$death_28d & .data$time_from_window_end_to_event_or_censor_days > 0,
       analysis_set = unname(cohort_display[.data$analysis_cohort]),
       age_per10 = .data$baseline_age / 10,
       sex_clean = case_when(
@@ -416,20 +441,25 @@ fit_landmark_main <- function(data, scope_id, model_id = "model3") {
   ci_table <- as.data.frame(sm$conf.int)
   coef_table$term <- rownames(coef_table)
   ci_table$term <- rownames(ci_table)
+  se_col <- intersect(c("robust se", "se(coef)"), colnames(coef_table))[1]
 
   coef_table %>%
     left_join(ci_table, by = "term") %>%
     filter(grepl("^exposure_group", .data$term)) %>%
     transmute(
+      scope_id = .env$scope_id,
       model_id = .env$model_id,
       model = .env$model_label,
       analysis_set = unname(scope_display[scope_id]),
       time_window = "Days 1-7",
+      n_days_estimated = n_distinct(fit_data$icu_day),
       exposure_category = sub("^exposure_group", "", .data$term),
       reference = "35-50",
       n_rows = nrow(fit_data),
       n_patients = n_distinct(fit_data$global_stay_id),
       events = sum(fit_data$landmark_event, na.rm = TRUE),
+      log_hr = .data$coef,
+      se_log_hr = .data[[se_col]],
       adjusted_hr = exp(.data$coef),
       ci_low = .data$`lower .95`,
       ci_high = .data$`upper .95`,
@@ -623,63 +653,55 @@ fit_fine_landmark_day <- function(data, scope_id, day, model_id = "model3") {
     )
 }
 
-summarise_day_specific_estimates <- function(day_rows, group_columns, summary_label = "Day-specific summary") {
-  day_rows %>%
-    group_by(across(all_of(group_columns))) %>%
-    group_modify(function(.x, .y) {
-      valid <- .x %>%
-        filter(!is.na(.data$log_hr), !is.na(.data$se_log_hr), .data$se_log_hr > 0)
+fit_fine_landmark_stacked <- function(data, scope_id, model_id = "model3") {
+  model_label <- unname(landmark_model_display[[model_id]])
+  covariate_label <- landmark_covariate_label(model_id)
 
-      if (nrow(valid) == 0) {
-        return(tibble(
-          icu_day = NA_integer_,
-          time_window = summary_label,
-          n_days_estimated = 0L,
-          n_at_landmark = NA_integer_,
-          events_at_landmark = NA_integer_,
-          n_in_category = NA_integer_,
-          events_in_category = NA_integer_,
-          n_rows = NA_integer_,
-          n_patients = NA_integer_,
-          events = NA_integer_,
-          log_hr = NA_real_,
-          se_log_hr = NA_real_,
-          adjusted_hr = NA_real_,
-          ci_low = NA_real_,
-          ci_high = NA_real_,
-          p_value = NA_real_,
-          aic = NA_real_,
-          model_formula = "Fixed-effect inverse-variance summary of day-specific landmark models"
-        ))
-      }
+  fit_data <- data %>%
+    filter_scope(scope_id) %>%
+    filter(!is.na(.data$paco2_fine_category)) %>%
+    mutate(
+      daily_oxygenation_type_clean = collapse_rare_factor_levels(.data$daily_oxygenation_type_clean),
+      across(where(is.factor), droplevels),
+      exposure_group = droplevels(.data$paco2_fine_category)
+    )
 
-      weights <- 1 / (valid$se_log_hr^2)
-      log_hr <- sum(weights * valid$log_hr) / sum(weights)
-      se_log_hr <- sqrt(1 / sum(weights))
-      z_value <- log_hr / se_log_hr
+  rhs <- paste(
+    c("exposure_group", landmark_adjustment_terms(fit_data, scope_id, model_id), "cluster(global_stay_id)"),
+    collapse = " + "
+  )
+  form <- as.formula(paste0("Surv(landmark_time, landmark_event) ~ ", rhs))
+  fit <- coxph(form, data = fit_data, ties = "efron", control = coxph.control(iter.max = 50))
 
-      tibble(
-        icu_day = NA_integer_,
-        time_window = summary_label,
-        n_days_estimated = nrow(valid),
-        n_at_landmark = NA_integer_,
-        events_at_landmark = NA_integer_,
-        n_in_category = NA_integer_,
-        events_in_category = NA_integer_,
-        n_rows = NA_integer_,
-        n_patients = NA_integer_,
-        events = NA_integer_,
-        log_hr = log_hr,
-        se_log_hr = se_log_hr,
-        adjusted_hr = exp(log_hr),
-        ci_low = exp(log_hr - 1.96 * se_log_hr),
-        ci_high = exp(log_hr + 1.96 * se_log_hr),
-        p_value = 2 * pnorm(abs(z_value), lower.tail = FALSE),
-        aic = NA_real_,
-        model_formula = "Fixed-effect inverse-variance summary of day-specific landmark models"
-      )
-    }) %>%
-    ungroup()
+  extract_cox_term_rows(
+    fit,
+    fit_data,
+    c(
+      `exposure_group<35` = "<35",
+      `exposure_group35-40` = "35-40",
+      `exposure_group45-50` = "45-50",
+      `exposure_group>50` = ">50"
+    ),
+    tibble(
+      scope_id = scope_id,
+      model_id = model_id,
+      model = model_label,
+      analysis_set = unname(scope_display[scope_id]),
+      icu_day = NA_integer_,
+      time_window = "Days 1-7",
+      n_days_estimated = n_distinct(fit_data$icu_day),
+      reference = "40-45",
+      covariates = covariate_label,
+      model_formula = paste(deparse(form), collapse = " ")
+    ),
+    count_variable = "exposure_group"
+  ) %>%
+    rename(exposure_category = "category_or_contrast") %>%
+    mutate(
+      n_rows = nrow(fit_data),
+      n_patients = n_distinct(fit_data$global_stay_id),
+      events = sum(fit_data$landmark_event, na.rm = TRUE)
+    )
 }
 
 # Patient-level burden data --------------------------------------------------
@@ -1035,10 +1057,12 @@ landmark_day_raw <- bind_rows(lapply(scope_ids, function(scope_id) {
     exposure_category = as.character(.data$exposure_category)
   )
 
-landmark_raw <- summarise_day_specific_estimates(
-  landmark_day_raw,
-  c("scope_id", "model_id", "model", "analysis_set", "exposure_category", "reference", "covariates")
-) %>%
+landmark_raw <- bind_rows(stacked_landmark_hierarchy_raw, stacked_cohort_hierarchy_raw) %>%
+  filter(.data$model_id == "model3") %>%
+  mutate(
+    icu_day = NA_integer_,
+    summary_method = "Stacked landmark Cox model with patient-clustered robust standard errors"
+  ) %>%
   mutate(
     analysis_set = factor(.data$analysis_set, levels = analysis_set_order),
     exposure_category = factor(.data$exposure_category, levels = c("<35", ">50"))
@@ -1051,7 +1075,7 @@ landmark_raw <- summarise_day_specific_estimates(
 
 landmark_detail_raw <- bind_rows(
   landmark_day_raw %>% mutate(row_type = "Day-specific"),
-  landmark_raw %>% mutate(row_type = "Day-specific summary")
+  landmark_raw %>% mutate(row_type = "Stacked overall")
 )
 
 fine_day_raw <- bind_rows(lapply(scope_ids, function(scope_id) {
@@ -1069,10 +1093,10 @@ fine_day_raw <- bind_rows(lapply(scope_ids, function(scope_id) {
     exposure_category = as.character(.data$exposure_category)
   )
 
-fine_raw <- summarise_day_specific_estimates(
-  fine_day_raw,
-  c("scope_id", "model_id", "model", "analysis_set", "exposure_category", "reference", "covariates")
-) %>%
+fine_raw <- bind_rows(lapply(scope_ids, function(scope_id) {
+  fit_fine_landmark_stacked(landmark_data, scope_id, "model3")
+})) %>%
+  mutate(summary_method = "Stacked landmark Cox model with patient-clustered robust standard errors") %>%
   mutate(
     analysis_set = factor(.data$analysis_set, levels = analysis_set_order),
     exposure_category = factor(.data$exposure_category, levels = c("<35", "35-40", "45-50", ">50"))
@@ -1085,7 +1109,7 @@ fine_raw <- summarise_day_specific_estimates(
 
 fine_detail_raw <- bind_rows(
   fine_day_raw %>% mutate(row_type = "Day-specific"),
-  fine_raw %>% mutate(row_type = "Day-specific summary")
+  fine_raw %>% mutate(row_type = "Stacked overall")
 )
 
 burden_landmark <- landmark_data %>%
@@ -1174,45 +1198,51 @@ burden_day_raw <- bind_rows(lapply(1:7, function(day) {
   )
 }))
 
-burden_raw <- summarise_day_specific_estimates(
-  burden_day_raw,
-  c("scope_id", "analysis_set", "exposure_metric", "category_or_contrast", "reference")
-) %>%
-  mutate(p_for_trend = NA_real_)
+days_trend_p <- trend_p_value(burden_landmark, "cumulative_high_risk_days", "pooled")
+prop_trend_p <- trend_p_value(burden_landmark, "cumulative_high_risk_prop", "pooled")
 
-days_trend_day_raw <- bind_rows(lapply(1:7, function(day) {
-  extract_burden_day_rows(
-    burden_landmark,
-    "cumulative_high_risk_days",
-    "Trend: number of high-risk days",
-    c(cumulative_high_risk_days = "per day"),
+burden_raw <- bind_rows(
+  extract_burden_rows(
+    fit_burden_model(burden_landmark, "any_high_risk", "pooled"),
+    "Any high-risk exposure",
+    c(any_high_riskYes = "Yes"),
+    "No"
+  ),
+  extract_burden_rows(
+    fit_burden_model(burden_landmark, "high_risk_days_cat", "pooled"),
+    "Number of high-risk days",
+    c(high_risk_days_cat1 = "1", `high_risk_days_cat2-3` = "2-3", `high_risk_days_cat>=4` = ">=4"),
     "0",
-    "pooled",
-    day
-  )
-}))
-prop_trend_day_raw <- bind_rows(lapply(1:7, function(day) {
-  extract_burden_day_rows(
-    burden_landmark,
-    "cumulative_high_risk_prop",
-    "Trend: proportion of high-risk days",
-    c(cumulative_high_risk_prop = "per 1.0 proportion"),
+    trend_p = days_trend_p
+  ),
+  extract_burden_rows(
+    fit_burden_model(burden_landmark, "high_risk_prop_cat", "pooled"),
+    "Proportion of high-risk days",
+    c(
+      `high_risk_prop_cat>0-25%` = ">0-25%",
+      `high_risk_prop_cat>25-50%` = ">25-50%",
+      `high_risk_prop_cat>50%` = ">50%"
+    ),
     "0%",
-    "pooled",
-    day
+    trend_p = prop_trend_p
+  ),
+  extract_burden_rows(
+    fit_burden_model(burden_landmark, "cumulative_deviation_per10", "pooled"),
+    "Cumulative deviation dose",
+    c(cumulative_deviation_per10 = "per 10 mmHg-days"),
+    "0 mmHg-days"
   )
-}))
-
-days_trend_summary <- summarise_day_specific_estimates(
-  days_trend_day_raw,
-  c("scope_id", "analysis_set", "exposure_metric", "category_or_contrast", "reference")
-)
-prop_trend_summary <- summarise_day_specific_estimates(
-  prop_trend_day_raw,
-  c("scope_id", "analysis_set", "exposure_metric", "category_or_contrast", "reference")
-)
-days_trend_p <- days_trend_summary$p_value[1]
-prop_trend_p <- prop_trend_summary$p_value[1]
+) %>%
+  mutate(
+    scope_id = "pooled",
+    analysis_set = "Pooled",
+    icu_day = NA_integer_,
+    time_window = "Days 1-7",
+    n_days_estimated = n_distinct(burden_landmark$icu_day),
+    log_hr = log(.data$adjusted_hr),
+    se_log_hr = (log(.data$ci_high) - log(.data$ci_low)) / (2 * qnorm(0.975)),
+    summary_method = "Stacked landmark Cox model with patient-clustered robust standard errors"
+  )
 
 burden_raw <- burden_raw %>%
   mutate(
@@ -1319,7 +1349,7 @@ reference_rows <- burden_counts_summary %>%
     exposure_metric,
     category_or_contrast,
     reference = "Reference",
-    time_window = "Day-specific summary",
+    time_window = "Days 1-7",
     n_days_estimated = 7L,
     n_at_landmark_range,
     n_in_category_range,
@@ -1384,10 +1414,10 @@ figure2_data <- bind_rows(
     mutate(day_label = paste0("Day ", .data$icu_day), point_type = "Day-specific"),
   landmark_raw %>%
     filter(.data$analysis_set == "Pooled") %>%
-    mutate(day_label = "Summary", point_type = "Summary")
+    mutate(day_label = "Overall", point_type = "Stacked overall")
 ) %>%
   mutate(
-    day_label = factor(.data$day_label, levels = rev(c(paste0("Day ", 1:7), "Summary"))),
+    day_label = factor(.data$day_label, levels = rev(c(paste0("Day ", 1:7), "Overall"))),
     exposure_category = factor(.data$exposure_category, levels = c("<35", ">50")),
     hr_label = if_else(
       is.na(.data$adjusted_hr),
@@ -1403,7 +1433,7 @@ figure2 <- ggplot(figure2_data, aes(x = .data$adjusted_hr, y = .data$day_label, 
   geom_text(aes(x = 2.35, label = .data$hr_label), hjust = 0, size = 2.7, color = "#222222") +
   facet_wrap(~exposure_category, ncol = 2) +
   scale_color_manual(values = exposure_colors) +
-  scale_shape_manual(values = c("Day-specific" = 16, "Summary" = 18)) +
+  scale_shape_manual(values = c("Day-specific" = 16, "Stacked overall" = 18)) +
   scale_x_log10(limits = c(0.55, 5.5), breaks = c(0.75, 1, 1.5, 2, 3)) +
   coord_cartesian(clip = "off") +
   labs(
@@ -1504,7 +1534,7 @@ pooled_fine_gt50 <- get_fine_est("Pooled", ">50")
 category_note_path <- file.path(MANUSCRIPT_DIR, "results_result3_category_sensitivity_note.txt")
 category_note <- paste0(
   "PaCO2 五分类边界敏感性分析以 40-45 mmHg 作为参照。",
-  "合并队列 day-specific landmark 模型中，35-40 mmHg 和 45-50 mmHg 相比 40-45 mmHg 的 adjusted HR 分别为 ",
+  "合并队列 stacked landmark 模型中，35-40 mmHg 和 45-50 mmHg 相比 40-45 mmHg 的 adjusted HR 分别为 ",
   fmt_estimate(pooled_fine_35_40$adjusted_hr, pooled_fine_35_40$ci_low, pooled_fine_35_40$ci_high),
   "和 ",
   fmt_estimate(pooled_fine_45_50$adjusted_hr, pooled_fine_45_50$ci_low, pooled_fine_45_50$ci_high),
@@ -1520,7 +1550,7 @@ result3_text <- c(
   "## Result 3. PaCO2 分类验证与高风险暴露负担",
   "",
   paste0(
-    "以 35-50 mmHg 为参照的 day-specific landmark 模型显示，合并队列中 TWA-PaCO2 <35 mmHg 和 >50 mmHg 均与较高的 28 天全因死亡风险相关，",
+    "以 35-50 mmHg 为参照的 stacked landmark 模型显示，合并队列中 TWA-PaCO2 <35 mmHg 和 >50 mmHg 均与较高的 28 天全因死亡风险相关，",
     "adjusted HR 分别为 ",
     fmt_estimate(pooled_lt35$adjusted_hr, pooled_lt35$ci_low, pooled_lt35$ci_high),
     "和 ",
@@ -1539,7 +1569,7 @@ result3_text <- c(
     " 例（",
     sprintf("%.1f", any_exposed_pct),
     "%）在可观察的 ICU 首周内至少出现 1 天高风险 PaCO2 暴露。",
-    "在 day-specific 累计暴露负担分析中，与尚无累计高风险暴露相比，任意累计高风险暴露的 adjusted HR 为 ",
+    "在 stacked landmark 累计暴露负担分析中，与尚无累计高风险暴露相比，任意累计高风险暴露的 adjusted HR 为 ",
     fmt_estimate(any_yes$adjusted_hr, any_yes$ci_low, any_yes$ci_high),
     "。按累计高风险暴露天数分层时，以 0 天为参照，1 天、2-3 天和 ≥4 天的 adjusted HR 分别为 ",
     fmt_estimate(days_1$adjusted_hr, days_1$ci_low, days_1$ci_high),

@@ -179,7 +179,7 @@ impute_dynamic_numeric <- function(data, variable, out_variable) {
     ) %>%
     arrange(.data$global_stay_id, .data$ped_interval) %>%
     group_by(.data$global_stay_id) %>%
-    fill(all_of(within_variable), .direction = "downup") %>%
+    fill(all_of(within_variable), .direction = "down") %>%
     ungroup() %>%
     left_join(day_medians, by = c("analysis_cohort", "source_icu_day")) %>%
     left_join(cohort_medians, by = "analysis_cohort") %>%

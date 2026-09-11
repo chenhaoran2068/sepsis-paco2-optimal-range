@@ -16,6 +16,11 @@ The Study has four cohorts. The synthetic demonstration intentionally uses three
 
 The synthetic cohort labels support a common multi-source schema. They do not represent source records, source identifiers, source dates, or source cohort counts.
 
+Each synthetic stay-day row includes a 1,440-minute nominal ICU-day window and
+an illustrative interval from the window end to the synthetic event or
+censoring time. These fields exercise the completed-window and forward-looking
+landmark code paths. They are generated independently of study records.
+
 ## Illustrative risk mechanism
 
 The generator uses an explicitly illustrative U-shaped PaCO2 risk mechanism to exercise continuous, categorical, burden, subgroup, and pH-adjusted code paths. The demonstration must not be used to reproduce, estimate, validate, or infer the study's numerical results or clinical conclusions.

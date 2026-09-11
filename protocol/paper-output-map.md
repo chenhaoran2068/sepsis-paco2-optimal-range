@@ -9,9 +9,9 @@ tables, figures, or claims.
 | `code/R/00_functions/compute_twa_paco2.R` | No standalone display item | Daily TWA-PaCO2 exposure definition |
 | `code/R/analysis/01_prepare_pamm_ped_data.R` | No standalone display item | 28-day follow-up modelling input and quality-control structure |
 | `code/R/analysis/10_result1_population_baseline.R` | Table 1; Table S1 | Descriptive cohort characterization and missingness support |
-| `code/R/analysis/11_result2_primary_pamm.R` | Figure 1; Figures S2-S4; Table S2 | Continuous association, TWA-PaCO2 distribution, adjustment hierarchy, day-specific curves, and model support |
-| `code/R/analysis/13_result3_landmark_burden.R` | Tables 2-3; Tables S3-S6; Figure 2; Figure S5 | Landmark categories, high-risk burden, category sensitivity, descriptive event rates, secondary exposure definitions, and cohort/day support |
-| `code/R/analysis/14_result4_subgroups_ph_sensitivity.R` | Figure 3; Figure S6; Tables S7-S8 | Subgroup analyses and pH-adjusted sensitivity |
+| `code/R/analysis/11_result2_primary_pamm.R` | Figure 1; Figures S2-S4; Table S2 | Continuous same-interval association, TWA-PaCO2 distribution, adjustment hierarchy, day-specific curves, and model support, using forward-only carry-forward for time-varying covariates |
+| `code/R/analysis/13_result3_landmark_burden.R` | Tables 2-3; Tables S3-S6; Figure 2; Figure S5 | Stacked landmark overall estimates, day-specific supporting estimates, high-risk burden, category sensitivity, descriptive event rates, secondary exposure definitions, and cohort/day support |
+| `code/R/analysis/14_result4_subgroups_ph_sensitivity.R` | Figure 3; Figure S6; Tables S7-S8 | Subgroup analyses and pH-adjusted sensitivity using completed nominal ICU-day windows and forward-only time-varying covariates |
 | `code/R/analysis/20_build_latex_tables.R` | Synthetic LaTeX fragments derived from Tables 1-3 and Tables S1-S8 | Demonstration output formatting only; not manuscript-ready display files |
 | `tests/validate_demo_run.R` | Presence and schema checks for the 25 required contract outputs | Public-package completion check only; not a numerical manuscript-results check |
 

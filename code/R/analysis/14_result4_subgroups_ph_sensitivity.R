@@ -40,6 +40,8 @@ dir.create(TABLE_SUPP_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(MANUSCRIPT_DIR, recursive = TRUE, showWarnings = FALSE)
 dir.create(MODEL_OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
+NOMINAL_LANDMARK_WINDOW_MINUTES <- 24 * 60
+
 message("Running Result 4: subgroup analyses and pH-adjusted sensitivity...")
 
 PRIMARY_K <- 7L
@@ -223,7 +225,7 @@ impute_landmark_dynamic_numeric <- function(data, variable, out_variable) {
     ) %>%
     arrange(.data$global_stay_id, .data$icu_day) %>%
     group_by(.data$global_stay_id) %>%
-    fill(all_of(within_variable), .direction = "downup") %>%
+    fill(all_of(within_variable), .direction = "down") %>%
     ungroup() %>%
     left_join(day_medians, by = c("analysis_cohort", "icu_day")) %>%
     left_join(cohort_medians, by = "analysis_cohort") %>%
@@ -263,12 +265,13 @@ prepare_landmark_subgroup_data <- function() {
       .data$landmark_eligible,
       .data$icu_day >= 1L,
       .data$icu_day <= 7L,
+      near(.data$window_duration_min, NOMINAL_LANDMARK_WINDOW_MINUTES),
       !is.na(.data$twa_paco2)
     ) %>%
     left_join(baseline, by = "global_stay_id") %>%
     mutate(
       landmark_time = pmax(.data$time_from_window_end_to_event_or_censor_days, 1e-06),
-      landmark_event = .data$death_28d & .data$time_to_event_28d_days > .data$icu_day,
+      landmark_event = .data$death_28d & .data$time_from_window_end_to_event_or_censor_days > 0,
       analysis_set = unname(cohort_display[.data$analysis_cohort]),
       age_per10 = .data$baseline_age / 10,
       sex_clean = case_when(
@@ -555,7 +558,7 @@ impute_pamm_dynamic_numeric <- function(data, variable, out_variable) {
     ) %>%
     arrange(.data$global_stay_id, .data$ped_interval) %>%
     group_by(.data$global_stay_id) %>%
-    fill(all_of(within_variable), .direction = "downup") %>%
+    fill(all_of(within_variable), .direction = "down") %>%
     ungroup() %>%
     left_join(day_medians, by = c("analysis_cohort", "source_icu_day")) %>%
     left_join(cohort_medians, by = "analysis_cohort") %>%

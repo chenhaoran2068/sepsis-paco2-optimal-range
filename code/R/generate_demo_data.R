@@ -72,6 +72,7 @@ day_long <- crossing(
   mutate(
     source_icu_day = .data$icu_day,
     observable_icu_day = TRUE,
+    window_duration_min = 24 * 60,
     landmark_eligible = .data$time_to_event_28d_days > .data$icu_day,
     time_from_window_end_to_event_or_censor_days = pmax(.data$time_to_event_28d_days - .data$icu_day, 0),
     n_paco2 = sample(1:4, n(), replace = TRUE),
@@ -92,7 +93,8 @@ day_long <- crossing(
   select(
     source_database, analysis_cohort, source_patient_id, source_hosp_id,
     source_stay_id, global_patient_id, global_hosp_id, global_stay_id,
-    icu_day, source_icu_day, observable_icu_day, landmark_eligible,
+    icu_day, source_icu_day, observable_icu_day, window_duration_min,
+    landmark_eligible,
     time_from_window_end_to_event_or_censor_days, n_paco2,
     twa_paco2, daily_sofa, daily_lactate, daily_mv, daily_vasopressor,
     daily_crrt_rrt, daily_ph, daily_hco3, daily_pao2, daily_fio2,

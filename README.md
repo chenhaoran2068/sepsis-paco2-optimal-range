@@ -5,7 +5,7 @@ Release, version tag, archive DOI, or paper DOI has been issued.
 
 ## Study identity
 
-This repository candidate accompanies the study, *Daily Time-Weighted PaCO2 and
+This repository accompanies the study, *Daily Time-Weighted PaCO2 and
 28-Day Mortality in ICU Sepsis: A Multicohort Retrospective Study*. The study
 examined the observational association between daily time-weighted arterial
 carbon dioxide partial pressure (TWA-PaCO2) during ICU days 1 to 7 and 28-day
@@ -60,6 +60,12 @@ GitHub stores topics as a flat list. They are grouped here for readability.
   validation.
 - A map from public code stages to the corresponding manuscript display items
   and claim families.
+
+The categorical analysis uses stacked landmark Cox models for overall
+estimates. Eligible patient-landmark rows are stratified by ICU day and, for
+pooled analyses, analytic cohort, with robust standard errors clustered by
+patient. Separate day-specific landmark models are retained as supporting
+analyses.
 
 ## What it does not contain
 

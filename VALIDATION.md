@@ -1,21 +1,30 @@
 # Validation Status
 
-This public source repository passed structural validation and a complete
-synthetic-demo run before publication. The executable code sources were previously exercised in
-an isolated short-path Windows R 4.5.1 mirror. Candidate-specific documentation,
-licenses, and release metadata do not alter that executable analysis path.
+This public source update incorporates the accepted stacked-landmark analysis
+and forward-only handling of time-varying covariates. Its executable path
+passed a complete synthetic-demo run in a short-path Windows validation copy.
 
-## Completed checks for this repository
+## Candidate checks
 
-- Run the repository-candidate validator with no errors.
-- Verify that no real data, generated outputs, logs, installed package library,
-  private path, credential, or prohibited file type is included.
-- Restore R 4.5.1 dependencies from `renv.lock` in an isolated short-path copy.
-- Run `Rscript code/run_demo.R --run-id validation_20260908_04`.
-- Confirm `qa/demo_qa_summary.csv` reports `PASS` and all 25 required outputs
-  are present.
-- Compare the SHA-256 hashes of every executable, configuration, test, and
-  runtime documentation input used for the isolated run with this candidate.
+- Repository-candidate schema and structural validation: passed for the rebuilt
+  candidate described by the release manifest.
+- Prohibited-content, private-path, credential, and symlink scan: passed by the
+  automated candidate validator and targeted review.
+- Clean R 4.5.1 synthetic-demo run from a short Windows path: passed using
+  `Rscript code/run_demo.R --run-id validation_20260911_08d` after restoring the
+  recorded environment.
+- Required-output contract and schema validation: passed. The run generated
+  1,500 synthetic stays, 10,500 synthetic stay-day rows, and all 25 required
+  outputs, with `qa/demo_qa_summary.csv` reporting `PASS`.
+- Executable-input SHA-256 comparison between the reviewed candidate and the
+  isolated validation copy: passed for the final rebuilt candidate inputs.
+
+The first run stopped before analysis because dependencies had not yet been
+restored, which is the documented prerequisite. A later run exposed a missing
+synthetic `window_duration_min` field required by the updated completed-window
+landmark code. The generator, data contract, and automated tests were updated,
+and the complete run then passed. These failed runs are retained only as local
+validation evidence and are not distributed.
 
 ## Output contract boundary
 
@@ -34,10 +43,10 @@ control, and are not included in this candidate.
 
 ## Interpretation
 
-Successful validation establishes that the synthetic demonstration can run from
-a clean, short-path Windows copy after its documented environment restore. It
-does not validate access to restricted study data, reproduce study estimates, or
-authorize public release.
+Successful validation establishes that the synthetic demonstration can run
+from a clean, short-path Windows copy after its documented environment restore.
+It will not validate access to restricted study data, reproduce study
+estimates, or authorize public release.
 
 ## Windows path note
 

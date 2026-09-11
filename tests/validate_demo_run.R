@@ -39,6 +39,11 @@ assert_true(all(table(baseline$analysis_cohort)[required_cohorts] == 500L), "Syn
 assert_true(nrow(day_long) == 10500L, "Synthetic longitudinal dataset must contain 10,500 rows.")
 assert_true(nrow(raw_paco2) == 10500L, "Synthetic PaCO2 dataset must contain 10,500 rows.")
 assert_true(all(day_long$icu_day %in% 1:7), "Synthetic ICU days must be in 1-7.")
+assert_true(all(day_long$window_duration_min == 1440), "Synthetic ICU-day windows must be 1,440 minutes.")
+assert_true(
+  all(day_long$time_from_window_end_to_event_or_censor_days >= 0),
+  "Synthetic post-window event or censoring times must be non-negative."
+)
 assert_true(!anyNA(baseline$global_stay_id), "Synthetic stay identifiers must be non-missing.")
 
 contract_path <- file.path(paths$release_root, "expected", "output-contract.csv")

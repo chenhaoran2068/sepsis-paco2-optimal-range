@@ -1,8 +1,8 @@
 {
   "record_type": "paper_repository_candidate_inventory",
   "schema_version": "0.1.0",
-  "candidate_id": "sepsis-paco2-optimal-range_candidate_20260908_07",
-  "built_at": "2026-09-08T08:56:47.140497+00:00",
+  "candidate_id": "sepsis-paco2-optimal-range_candidate_20260911_11",
+  "built_at": "2026-09-11T04:45:01.163999+00:00",
   "files": [
     {
       "path": ".Rprofile",
@@ -16,8 +16,8 @@
     },
     {
       "path": "CITATION.cff",
-      "size": 474,
-      "sha256": "b9a4908c8cb170fdb90cfe30efc47df962a3102e587e2b65ed89c10a584f0859"
+      "size": 580,
+      "sha256": "97f563c57a1a05ebe8542660ead93396139dea93c8add019a7939478ed928e24"
     },
     {
       "path": "DATA_ACCESS.md",
@@ -36,23 +36,28 @@
     },
     {
       "path": "LICENSE-STATUS.md",
-      "size": 1193,
-      "sha256": "85d18f9bf07db8c9fc17e886572ef4b2e7d33c5009016a2b92ec8202f7baec66"
+      "size": 1345,
+      "sha256": "b0e23a056475276eba3c23fb95f4124adeae13ab3da4953022308cee38b7e5c5"
     },
     {
       "path": "README.md",
-      "size": 4588,
-      "sha256": "a21c7986648135b997c2cc9bb36abead8dfbf1fb3bdcb3f3e6318cc56e1597a1"
+      "size": 5130,
+      "sha256": "97cf27a6d77e2dd9bb21f40f93cac896efb77bcbea097dae3e131d8e99e6e6a3"
     },
     {
       "path": "RELEASE_MANIFEST.json",
-      "size": 2998,
-      "sha256": "03fca3d29430be3cf3cfdc0c919256511fc4fd6a46e01201e6fb2d12e3117803"
+      "size": 3350,
+      "sha256": "7b6da1774943a92f80b2c03c82a9a8da9e0cec647f92daca33207b4185cbbf57"
+    },
+    {
+      "path": "THIRD_PARTY_NOTICES.md",
+      "size": 1481,
+      "sha256": "c9cdbf0e1bf65b549f5ac310aa1ad6292129dc96b52b049346fb5fe78fea9eb9"
     },
     {
       "path": "VALIDATION.md",
-      "size": 2629,
-      "sha256": "08cc740dabba6d334326bd519ad38484ed0680a24df906151896ef7a4a4ff152"
+      "size": 3176,
+      "sha256": "d28de8f868bdf90846bfa465a561ee2e0db8bcc70be24366dbf980f2e0cd6dd8"
     },
     {
       "path": "code/R/00_functions/compute_twa_paco2.R",
@@ -76,18 +81,18 @@
     },
     {
       "path": "code/R/analysis/11_result2_primary_pamm.R",
-      "size": 39426,
-      "sha256": "f4971852512bef4e6e395f4773fe07ed39ae927982fa78029f366e217c7aae99"
+      "size": 39424,
+      "sha256": "84028ceb599677b505c0598c28c18b191c91a306edd68211a01c64c9c2019898"
     },
     {
       "path": "code/R/analysis/13_result3_landmark_burden.R",
-      "size": 61634,
-      "sha256": "342cf0e241c5e9079e33ad9abef30e453c5dfb635c7523ef30dc7ab487f26fe1"
+      "size": 63035,
+      "sha256": "e8136b18ed97b0e89296eb85010262ac599bb5f72b7cc6536ba2f7469037a6b1"
     },
     {
       "path": "code/R/analysis/14_result4_subgroups_ph_sensitivity.R",
-      "size": 39340,
-      "sha256": "98b70e3450a579067decd71da76d50d26214602dede72a25ae3beb0d1e32b4dd"
+      "size": 39462,
+      "sha256": "c92968dfea2f50de9289f8a2b94de1a29d7ae24df1420b689853d963f8129a2b"
     },
     {
       "path": "code/R/analysis/20_build_latex_tables.R",
@@ -116,8 +121,8 @@
     },
     {
       "path": "code/R/generate_demo_data.R",
-      "size": 6445,
-      "sha256": "b04f3801fb08d39321ccbc544612a11e472a72a825563fafcb31b399d57e21c0"
+      "size": 6505,
+      "sha256": "86376298de5e63009006fa6446346975be06dbf4577b4ddf9237c929ca4effd0"
     },
     {
       "path": "code/install_dependencies.R",
@@ -136,8 +141,8 @@
     },
     {
       "path": "demo/DATA_CONTRACT.md",
-      "size": 1922,
-      "sha256": "8b58d8f6b7b798d36d79ba0b7d97fd840187387f68c288e861e9856993f22b8f"
+      "size": 2224,
+      "sha256": "f439d8928057fd0162120131005b73aa3e54d0253c3d029301befbb8a1ff1c7f"
     },
     {
       "path": "expected/output-contract.csv",
@@ -146,13 +151,13 @@
     },
     {
       "path": "protocol/analysis-specification.md",
-      "size": 1208,
-      "sha256": "5f66d32f8494fa44f57ac751ca767254e6e0cd0243c18ba9a536fb2d5cb9d258"
+      "size": 1714,
+      "sha256": "83f9cb8ee2684130eaad46f47d0e4d9a04aba0f9630c6c2908f8c5a45e14b90f"
     },
     {
       "path": "protocol/paper-output-map.md",
-      "size": 2662,
-      "sha256": "69c32a66e569f80bc7f2aafa8297773c5d46b398d7d3080c94a318c782f7ebb3"
+      "size": 2869,
+      "sha256": "e376f0e9c309655d421179d76fc5ad85e1861bbf092061955f0249eba6bed3f8"
     },
     {
       "path": "protocol/study-summary.md",
@@ -176,8 +181,8 @@
     },
     {
       "path": "tests/validate_demo_run.R",
-      "size": 5506,
-      "sha256": "84a7a4e07870d1c42dc99a19285826d7b0860c23b4ca346ffd867bbdd9aa3695"
+      "size": 5768,
+      "sha256": "d680bb5ce22226b7240d2552d242a5c013fb5a3f40e2f1654021af23974d3602"
     }
   ]
 }
